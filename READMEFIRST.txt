@@ -1,32 +1,26 @@
-Lab 4 Assignment
+# Homework 1 — Process Creation and Management 
 
-This is the concatenation program.
+C program that will take commands from a file. Run them using fork() and execvp(). Wait on them to complete. Write out commands as well as start time and end time to a log file.
 
-To run the file, we do
+## Files 
 
-gcc <file_name.c> -o <file_name>
+| File | Description | 
+|--------------|----------------------------------------------------------| 
+| `runcmds.c` | Solution for this assignment. | 
+| `hw1.c` | Will be used to consume cpu time. | 
+| `Makefile` | Used to compile the files. | 
+| `input.txt` | An input file. Created when running make test. | 
+| `output.log` | Will hold commands as well as times. Created at runtime. | 
 
-NOTE: Make sure the second file above does not have a .c extension otherwise it won't compile properly
+## Build 
 
-Description.
+```bash 
+make 
 
-The program concatenates the contents of the 2nd file to the end of the first file. 
 
-The contents of the second file are not altered, they remain the same. The first file now just has new information appended to it.
+## The input.txt file can contain the following commands
 
-Conditions:
-There needs to be two filename arguments.
-    File names cannot be identical (including error check).
-    File 1 must exist and be writable.
-    File 2 must exist and be readable.
-
-For example:
-$ cat file1
-    Hi guys! This is first file!
-    $ cat file2
-    Hello everyone! This is the second file!
-    $ ./lab4 file1 file2 $ cat file1
-    Hello everyone! This is the first file!
-    Hello everyone! This is the other file!
-    $ cat file2
-    Hello everyone! This is the 2nd file!
+uname -a
+/sbin/ifconfig
+./hw1 500
+./hw1 1000

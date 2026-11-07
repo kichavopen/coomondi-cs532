@@ -1,40 +1,25 @@
-# Makefile for Homework 1 - Process creation and management
+# Makefile for Lab 11 - command runner using popen/pclose
 #
 # Targets:
-#   make          - build everything (runcmds, hw1, input.txt)
-#   make runcmds  - build the driver program only
-#   make hw1      - build the sample workload program only
-#   make test     - build, then run against input.txt
-#   make clean    - remove build artifacts
+#   make        - build lab11
+#   make test   - build, then run a scripted session
+#   make clean  - remove build artifacts
 
-CC      = gcc
-CFLAGS  = -Wall -g
-LDFLAGS =
+CC     = gcc
+CFLAGS = -Wall -Wextra -g
+TARGET = lab11
 
-TARGETS = runcmds hw1
+all: $(TARGET)
 
-# Default: build both programs and the sample input file
-all: $(TARGETS) input.txt
+$(TARGET): lab11.c
+	$(CC) $(CFLAGS) -o $@ $^
 
-# Driver program (the assignment solution)
-runcmds: runcmds.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+# Scripted session exercising wildcards, pipes, and redirection
+test: $(TARGET)
+	@printf 'ls *.c\nls -l pipe[1-3].c\nls pipe*.c | sort\nls pipe?.c | sort > files.out\ncat files.out\nquit\n' | ./$(TARGET)
+	@rm -f files.out
 
-# Sample workload program supplied with the lab
-hw1: hw1.c
-	$(CC) $(CFLAGS) -O -o $@ $^ $(LDFLAGS)
-
-# Generate the sample input file
-input.txt:
-	printf 'uname -a\n/sbin/ifconfig\n./hw1 500\n./hw1 1000\n' > $@
-
-# Build and run against the sample input file
-test: all
-	./runcmds input.txt
-	@echo "---- output.log ----"
-	@cat output.log
-
-.PHONY: all clean test
+.PHONY: all test clean
 
 clean:
-	rm -f $(TARGETS) output.log input.txt
+	rm -f $(TARGET) files.out

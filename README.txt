@@ -1,45 +1,91 @@
-README.txt for search 
+Lab 11 - Interactive command runner
 
-A program that allows you to traverse through a file system much like find does in unix.
+Name: Chris
+BlazerId: coomondi
+Project #: 11
 
--S will list out files and display size permission and time accessed.
--s <int> will list out all files that have a size less than or equal to <int>.
--f <string> <int> will list out all files that contain the string and are within <int> amount of depth.
--t <char> if set to f it will list out all files if set to d it will only list out directories.
+COMPILE
+  make
 
-These can all be used together in any order. The program will list out all files that
-fulfill those requirements. 
+RUN
+  ./lab11
 
-compile: 
+DESCRIPTION
+  Prompts repeatedly for a UNIX command, executes each one with popen in
+  read mode, and copies the command's standard output to the terminal.
+  Because popen hands the string to "sh -c", wildcards, pipes, and
+  redirections behave exactly as they would at a shell prompt. Entering
+  "quit" (or Ctrl-D) ends the program.
 
-make 
+  Output is read with fgets and echoed with fputs, so a command producing
+  no output simply prints nothing and returns to the prompt.
 
-run: 
+TESTING
 
-./search <arguments> <directory path> 
+  1. Interactive run
 
-./search -S -s 1024 -f "txt" 2 
+     make
+     ./lab11
 
-./search -t f -S 
+     Then try each of these, matching the sample session:
 
-./search -t d -s 500 <directory> 
+       ls *.c
+       ls -l pipe[1-3].c
+       ls pipe*.c | sort
+       ls pipe?.c | sort > files.out
+       cat files.out
+       quit
 
+     Expected: each command's output appears, the redirection writes to
+     files.out rather than the terminal, cat shows its contents, and quit
+     prints "Exiting program...bye!" and returns to the shell.
 
-Example commands I have used and work effectively are
+  2. Automated run
 
-1)Lists all files
+     make test
 
-./search /home/chris/homework2/projects/
+     Runs the same sequence non-interactively and cleans up files.out.
 
-2)Lists files with more information
+  3. Empty input
 
-./search -S /home/chris/homework2/projects/ 
+     Press Enter at the prompt a few times.
 
-3)Lists files with sies less than or equal to 1000 bytes
-./search -s 1000 /home/chris/homework2/projects/
+     Expected: prompt reappears each time, no error, no crash.
 
-4) Lists files with details and sies
-./search -S -s 500 /home/chris/homework2/projects
+  4. Bad command
 
-5)Lists c files with depth less than or equal to 3
-./search -f "c" 3 /home/chris/homework2/projects/
+     nosuchcommand
+
+     Expected: "sh: 1: nosuchcommand: not found" from the shell, then the
+     prompt returns. The program keeps running.
+
+  5. Long output
+
+     ls -l /etc
+
+     Expected: full listing, no truncation or hang.
+
+  6. Ctrl-D
+
+     Press Ctrl-D at the prompt.
+
+     Expected: newline, then "Exiting program...bye!".
+
+EDGE CASES HANDLED
+  - empty line -> re-prompt
+  - Ctrl-D / EOF -> clean exit
+  - popen failure -> perror, continue prompting
+  - pclose failure -> perror
+  - commands with no output -> nothing printed, prompt returns
+  - input longer than the buffer is split across prompts
+
+KNOWN ISSUES
+  - "quit" must be typed exactly, with no leading or trailing spaces.
+  - Commands are limited to 4095 characters per line.
+  - Interactive pagers (more, less) are not driven; their output is just
+    copied through.
+
+NOTES
+  - popen is used in "r" mode only, so the parent reads the child's stdout.
+    The alternative "w" mode would require the parent to generate the input
+    instead of consuming output.
